@@ -36,8 +36,26 @@ spec:
 
 // Configuration à modifier
   stages {
+    stage('Run') {
+      when {
+        branch 'master';
+      }
+      steps {
+        container('docker') {
+          sh 'docker build -t my-app:$BUILD_NUMBER .' 
+          sh 'docker run my-app:$BUILD_NUMBER'
+        }
+      }
+    }
 
+    // Pour s'exécuter sur la branches master et develop
     stage('Build') {
+      when {
+        anyOf {
+          branch 'master';
+          branch 'develop'
+        }
+      }
       steps {
         container('maven') {
           sh 'mvn -B -DskipTests clean package'
